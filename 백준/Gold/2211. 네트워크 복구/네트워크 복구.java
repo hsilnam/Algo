@@ -65,7 +65,17 @@ public class Main {
         }
 
 
-        int cnt = 0;
+//        int cnt = 0;
+        StringBuilder nodeInfo = new StringBuilder();
+        for (int i = 1; i < N; i++) { // root 제외하고 (첫번째)
+//            if (mins[i].w != Integer.MAX_VALUE) {
+//                cnt += 1;
+                nodeInfo.append(i + 1).append(" ").append(mins[i].num + 1).append("\n");
+//            }
+        }
+        StringBuilder result = new StringBuilder();
+        System.out.println(result.append(N-1).append("\n").append(nodeInfo).toString());
+/*        int cnt = 0;
         StringBuilder nodeInfo = new StringBuilder();
         for (int i = 1; i < N; i++) { // root 제외하고 (첫번째)
             if (mins[i].w != Integer.MAX_VALUE) {
@@ -74,7 +84,7 @@ public class Main {
             }
         }
         StringBuilder result = new StringBuilder();
-        System.out.println(result.append(cnt).append("\n").append(nodeInfo).toString());
+        System.out.println(result.append(cnt).append("\n").append(nodeInfo).toString());*/
 //        System.out.println(Arrays.toString(mins));
     }
 }
