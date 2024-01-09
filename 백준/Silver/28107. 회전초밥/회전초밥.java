@@ -1,6 +1,21 @@
 import java.util.*;
 import java.io.*;
 
+/*
+PriorityQueue 이용
+- LikeInfo: 초밥을 좋아하는 사람들의 정보 (사람 번호, 초밥 타입)
+    - 1. 초밥 타입 오름차순 정렬
+    - 2. 초밥 타입이 같다면 사람 번호 오름차순 정렬 (앞에 있는 사람이 먼저 초밥을 먹기 때문)
+- pq: 회전 초밥 타입 정보
+    - 초밥 타입 순으로 정렬 (LikeInfo와 동일한 순서 기준으로 비교하기 위하여)
+
+- LikeInfo, pq의 초밥 타입을 오름차순으로 비교했을 시 (queue의 peek 이용)
+    - LikeInfo.type == pq: 해당 순서의 사람이 초밥을 먹음
+    - LikeInfo.type < pq : 해당 순서의 사람이 좋아하는 초밥을 먹을 수 있는 경우가 없음
+    - LikeInfo.type > pq : 해당 순서의 초밥을 좋아하는 사람이 없음
+
+(HashSet을 이용한 것은 시간초과)
+ */
 public class Main {
 
     static class LikeInfo implements Comparable<LikeInfo> {
