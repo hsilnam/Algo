@@ -4,18 +4,7 @@ import java.io.*;
 /*
 a) Map으로 기울기 개수 구하기 (평행한 것은 같은 기울기로 취급)
     - 'ax + by + c = 0'의 기울기: -b/a
-//        - 최대공약수를 구하고 a,b에 나누기
-//        - ag가 0이면: 기울기 0으로 만들기
-//          - ag가 0이면 기울기가  에러를 뱉는 것이 아니라 -Infinity값이 나온다
-//        - 아니면: 기울기 구하기
-//        - 참고:
-//          - bg가 0이면 기울기가 -0.0이 된다
-//          - map에서 key로 0.0, -0.0은 다르게 구분되는데 이는 a=0,b=4 / a=3,b=0과 같은 기울기가 없는 직선에 대한 값을 구할 수 있다
-//            '''
-//            map.put(0.0, 1);
-//            map.put(-0.0, 1);
-//            => {0.0=1, -0.0=1}
-//            '''
+        - 최대공약수를 구하고 a,b에 나누기
 
 b) 전체 조합의 수 - 동일한 기울기의 조합의 수 (nC2 이용)
 - 주의점: double, long 타입 맞춰주기
@@ -57,15 +46,10 @@ public class Main {
             String[] temp = br.readLine().split(" ");
             long a = Long.parseLong(temp[0]);
             long b = Long.parseLong(temp[1]);
-//            long gcd = gcd(a, b);
-//            double ag = a / gcd;
-//            double bg = b / gcd;
-//            double slope = (-1.0) * (bg / ag);
-            double slope = 0.0;
-            if (b != 0) {
-                long g = gcd(Math.max(a, b), Math.min(a, b));
-                slope = -(double) (a / g) / (b / g);
-            }
+            long gcd = gcd(a, b);
+            double ag = a / gcd;
+            double bg = b / gcd;
+            double slope = (-1.0) * (bg / ag);
             slopes.put(slope, slopes.getOrDefault(slope, 0) + 1);
         }
 
