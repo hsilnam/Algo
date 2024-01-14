@@ -49,6 +49,11 @@ public class Main {
             if (cur.x == N - 1 && cur.y == N - 1) {
                 break;
             }
+
+            if (cur.price != mins[cur.x][cur.y]) {
+                continue;
+            }
+
             for (int[] move : moves) {
                 int nx = cur.x + move[0];
                 int ny = cur.y + move[1];
