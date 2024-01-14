@@ -46,11 +46,7 @@ public class Main {
         while (!pq.isEmpty()) {
             Node cur = pq.poll();
 
-            if (cur.x == N - 1 && cur.y == N - 1) {
-                break;
-            }
-
-            if (cur.price != mins[cur.x][cur.y]) {
+            if (cur.price > mins[cur.x][cur.y]) {
                 continue;
             }
 
