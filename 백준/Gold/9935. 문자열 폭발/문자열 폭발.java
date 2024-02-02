@@ -19,7 +19,6 @@ public class Main {
 
         char[] inputs = br.readLine().toCharArray();
         char[] boom = br.readLine().toCharArray();
-        int boomLastIdx = boom.length - 1;
         Stack<Character> stack = new Stack<>();
         for (char c : inputs) {
             stack.push(c);
@@ -27,10 +26,28 @@ public class Main {
                 continue;
             }
 
+            // 방법1: stack get, pop 이용
+            boolean isBoom = true;
+            for (int i = 0; i < boom.length; i++) {
+                if (stack.get(stack.size() - (boom.length - i)) != boom[i]) {
+                    isBoom = false;
+                    break;
+                }
+            }
+
+            if (isBoom) {
+                for (int i = 0; i < boom.length; i++) {
+                    stack.pop();
+                }
+            }
+
+            /*
+            // 방법2: stack pop, push 이용
+            int boomLastIdx = boom.length - 1;
             if (stack.peek() != boom[boomLastIdx]) {
                 continue;
             }
-            
+
             int idx = -1;
             for (int i = boomLastIdx; i >= 0; i--) {
                 if (stack.peek() != boom[i]) {
@@ -44,6 +61,7 @@ public class Main {
                     stack.push(boom[i]);
                 }
             }
+            */
         }
 
         StringBuilder result = new StringBuilder();
