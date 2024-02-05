@@ -1,73 +1,65 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayDeque;
-import java.util.Arrays;
-import java.util.Queue;
+import java.util.*;
+import java.io.*;
 
+/*
+A에서 B로 가는 최단거리: bfs
+ */
 public class Main {
-	static int N, K;
-	static int size = 100001;
-	static int[] arr = new int[size];
-	static final int max = Integer.MAX_VALUE - 1;
-	static int min = max;
+    public static final int maxSize = 100_000;
 
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		String[] temp = br.readLine().split(" ");
-		N = Integer.valueOf(temp[0]);
-		K = Integer.valueOf(temp[1]);
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        String[] temp = br.readLine().split(" ");
 
-		for (int i = 0; i < size; i++) {
-			arr[i] = max;
-		}
+        int N = Integer.parseInt(temp[0]);
+        int K = Integer.parseInt(temp[1]);
 
-		search();
-		System.out.println(min);
-	}
+        int[] mins = new int[maxSize + 1];
+        Arrays.fill(mins, Integer.MAX_VALUE);
+        Queue<int[]> queue = new PriorityQueue<>(new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return Integer.compare(o1[1], o2[1]);
+            }
+        });
+        mins[N] = 0;
+        queue.offer(new int[]{N, 0}); // idx, cnt
 
-	public static void search() {
-		int idx, cnt;
+        while (!queue.isEmpty()) {
+            int[] cur = queue.poll();
+            int cIdx = cur[0];
+            int cCnt = cur[1];
 
-		Queue<int[]> queue = new ArrayDeque<>();
+            if (cIdx == K) {
+                break;
+            }
 
-		int[] start = { N, 0 }, tg;
-		queue.offer(start);
+            if (isIn(cIdx * 2)
+                    && mins[cIdx * 2] > cCnt + 1) {
+                mins[cIdx * 2] = cCnt + 1;
+                queue.offer(new int[]{cIdx * 2, mins[cIdx * 2]});
+            }
 
-		while (!queue.isEmpty()) {
-//			for (int[] q : queue) {
-//				System.out.print(Arrays.toString(q) + " ");
-//			}
-//			System.out.println();
-			tg = queue.poll();
-			idx = tg[0];
-			cnt = tg[1];
-			if (cnt >= min) {
-				continue;
-			}
-			if (idx == K) {
-				min = Math.min(cnt, min);
-//				System.out.println(min);
-				continue;
-			}
+            if (isIn(cIdx + 1)
+                    && mins[cIdx + 1] > cCnt + 1) {
+                mins[cIdx + 1] = cCnt + 1;
+                queue.offer(new int[]{cIdx + 1, mins[cIdx + 1]});
+            }
+            if (isIn(cIdx - 1)
+                    && mins[cIdx - 1] > cCnt + 1) {
+                mins[cIdx - 1] = cCnt + 1;
+                queue.offer(new int[]{cIdx - 1, mins[cIdx - 1]});
+            }
+        }
 
-			int[] nextIdxes = { idx - 1, idx + 1, idx * 2 };
-			int nextCount = cnt + 1;
-			for (int nextIdx : nextIdxes) {
-				if (nextIdx == idx) {
-					continue;
-				}
+        bw.write(Integer.toString(mins[K]));
 
-				if (nextIdx < 0 || nextIdx >= size) {
-					continue;
-				}
-				if (arr[nextIdx] != max && nextCount > arr[nextIdx]) {
-					continue;
-				}
-				arr[nextIdx] = nextCount;
-				int[] nextTg = { nextIdx, nextCount };
-				queue.offer(nextTg);
-			}
-		}
-	}
+        br.close();
+        bw.close();
+    }
+
+    public static boolean isIn(int idx) {
+        return (idx >= 0 && idx <= maxSize);
+    }
 }
