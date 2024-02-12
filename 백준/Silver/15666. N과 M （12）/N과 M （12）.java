@@ -16,10 +16,16 @@ public class Main {
         N = Integer.parseInt(temp[0]);
         M = Integer.parseInt(temp[1]);
 
-        inputs = new int[N];
+        HashSet<Integer> hashset = new HashSet<>();
         temp = br.readLine().split(" ");
         for (int i = 0; i < N; i++) {
-            inputs[i] = Integer.parseInt(temp[i]);
+            hashset.add(Integer.parseInt(temp[i]));
+        }
+
+        inputs = new int[hashset.size()];
+        int i = 0;
+        for (int ele : hashset) {
+            inputs[i++] = ele;
         }
         Arrays.sort(inputs);
 
@@ -42,7 +48,7 @@ public class Main {
         }
 
         int before = 0;
-        for (int i = start; i < N; i++) {
+        for (int i = start; i < inputs.length; i++) {
             if (before != inputs[i]) {
                 before = inputs[i];
                 nums[cnt] = inputs[i];
