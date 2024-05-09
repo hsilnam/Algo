@@ -28,8 +28,7 @@ public class Main {
         });
 
         PriorityQueue<Integer> rooms = new PriorityQueue(); // room end time
-
-        int cnt = 0;
+        
         for (int[] time : times) {
 
             int start = time[0];
@@ -37,8 +36,6 @@ public class Main {
 
             if(!rooms.isEmpty() && rooms.peek() <= start) {
                 rooms.poll();
-            } else {
-                cnt++;
             }
             rooms.offer(end);
         }
