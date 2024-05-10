@@ -1,6 +1,13 @@
 import java.io.*;
 import java.util.*;
 
+
+/*
+- 단방향 그래프 이용
+- 순차적으로 bfs로 검사하면서,
+    처음 시작 부분이 제일 앞에있는 노드부터 시작할 수 있도록
+    각 노드의 위치에서의 최댓값일때만 값 업데이트
+ */
 public class Main {
 
     public static void main(String[] args) throws Exception {
