@@ -35,10 +35,7 @@ public class Main {
     }
 
     public static void explore(int x, int y) {
-        if (!isIn(x, y)) {
-            return;
-        }
-        if (visited[x][y]) {
+        if(isOk) {
             return;
         }
 
@@ -48,8 +45,13 @@ public class Main {
             return;
         }
 
-        explore(map[x][y] + x, y);
-        explore(x, map[x][y] + y);
+        
+        if (isIn(map[x][y] + x, y) && !visited[map[x][y] + x][y]) {
+            explore(map[x][y] + x, y);
+        }
+        if (isIn(x, map[x][y] + y) && !visited[x][map[x][y] + y]) {
+            explore(x, map[x][y] + y);
+        }
     }
 
     public static boolean isIn(int x, int y) {
