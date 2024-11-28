@@ -5,13 +5,13 @@ import java.util.*;
 최대힙(우선순위큐)를 사용
 - 뿅망치를 사용횟수만큼 반복하여 최대키를 절반값으로 만들어 다시 힙에 넣는다
     - 이때 최대값이 자신의 키보다 작으면 멈춘다
-    - 단 키가 1이면 절반으로 나누지 않는다
+    - 단 키가 1이면 절반으로 나누지 않고 멈춘다
 - 최대값이 자신의 키보다 작으면 "YES"아니면 "NO"를 출력하고
     - YES인경우, 뿅망치 횟수를 출력한다
     - NO인 경우, 가장 큰키를 출력한다
  */
 
-public class Main {
+public class Solution {
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -31,6 +31,9 @@ public class Main {
         int cnt;
         for (cnt = 0; cnt < T; cnt++) {
             if (H > pq.peek()) {
+                break;
+            }
+            if(pq.peek() == 1) {
                 break;
             }
             pq.offer((pq.peek() != 1) ? pq.poll() / 2 : 1);
