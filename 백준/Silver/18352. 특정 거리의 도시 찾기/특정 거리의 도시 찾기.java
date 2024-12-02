@@ -22,7 +22,7 @@ N: 도시의 개수 (2 ≤ N ≤ 300_000)
 public class Main {
     public static int N;
     public static ArrayList<Integer>[] graph;
-    public static int[] dist;
+    public static ArrayList<Integer> dist = new ArrayList<>();
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -46,16 +46,16 @@ public class Main {
             graph[a].add(b);
         }
 
-        dijkstra(X);
+        bfs(X, K);
+//        dijkstra(X);
 
+        Collections.sort(dist);
         StringBuilder answer = new StringBuilder();
-        for (int i = 1; i < N+1; i++) {
-            if(dist[i] == K) {
-                answer.append(i).append("\n");
-            }
+        for (int d : dist) {
+            answer.append(d).append("\n");
         }
 
-        if(answer.length() == 0) {
+        if (answer.length() == 0) {
             bw.write(Integer.toString(-1));
         } else {
             bw.write(answer.toString());
@@ -66,28 +66,55 @@ public class Main {
         bw.close();
     }
 
-
-    public static void dijkstra(int start) {
-        dist = new int[N + 1];
-        Arrays.fill(dist, Integer.MAX_VALUE);
-
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        pq.offer(new Node(start, 0));
-        dist[start] = 0;
-
-        while (!pq.isEmpty()) {
-            Node cur = pq.poll();
-            if (dist[cur.num] < cur.dist) {
-                continue;
+    public static void bfs(int start, int k) {
+        Queue<Integer> queue = new LinkedList<>();
+        boolean[] visited = new boolean[N + 1];
+        int count = 0;
+        queue.offer(start);
+        visited[start] = true;
+        while (!queue.isEmpty()) {
+            if (count == k) {
+                while (!queue.isEmpty()) {
+                    dist.add(queue.poll());
+                }
+                break;
             }
-            for (int next : graph[cur.num]) {
-                if (dist[next] > dist[cur.num] + 1) {
-                    dist[next] = dist[cur.num] + 1;
-                    pq.offer(new Node(next, dist[next]));
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int cur = queue.poll();
+
+                for (int next : graph[cur]) {
+                    if (!visited[next]) {
+                        queue.offer(next);
+                        visited[next] = true;
+                    }
                 }
             }
+            count++;
         }
     }
+
+//    public static void dijkstra(int start) {
+//        dist = new int[N + 1];
+//        Arrays.fill(dist, Integer.MAX_VALUE);
+//
+//        PriorityQueue<Node> pq = new PriorityQueue<>();
+//        pq.offer(new Node(start, 0));
+//        dist[start] = 0;
+//
+//        while (!pq.isEmpty()) {
+//            Node cur = pq.poll();
+//            if (dist[cur.num] < cur.dist) {
+//                continue;
+//            }
+//            for (int next : graph[cur.num]) {
+//                if (dist[next] > dist[cur.num] + 1) {
+//                    dist[next] = dist[cur.num] + 1;
+//                    pq.offer(new Node(next, dist[next]));
+//                }
+//            }
+//        }
+//    }
 
     public static class Node implements Comparable<Node> {
         int num;
