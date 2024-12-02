@@ -20,62 +20,87 @@ N: 도시의 개수 (2 ≤ N ≤ 300_000)
  */
 
 public class Main {
+    public static int N;
+    public static ArrayList<Integer>[] graph;
+    public static int[] dist;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         String[] temp = br.readLine().split(" ");
-        int N = Integer.parseInt(temp[0]);
+        N = Integer.parseInt(temp[0]);
         int M = Integer.parseInt(temp[1]);
         int K = Integer.parseInt(temp[2]);
         int X = Integer.parseInt(temp[3]);
 
-        ArrayList<int[]>[] graph = new ArrayList[N + 1];
-        for (int i = 1; i <= N; i++) {
+        graph = new ArrayList[N + 1];
+        for (int i = 0; i <= N; i++) {
             graph[i] = new ArrayList<>();
         }
 
         for (int i = 0; i < M; i++) {
             temp = br.readLine().split(" ");
-            graph[Integer.parseInt(temp[0])].add(new int[]{Integer.parseInt(temp[1]), 1});
+            int a = Integer.parseInt(temp[0]);
+            int b = Integer.parseInt(temp[1]);
+            graph[a].add(b);
         }
 
-        int[] mins = new int[N + 1];
-        Arrays.fill(mins, Integer.MAX_VALUE);
-        mins[X] = 0;
-        PriorityQueue<int[]> queue = new PriorityQueue<>(new Comparator<int[]>() {
-            @Override
-            public int compare(int[] o1, int[] o2) {
-                return Integer.compare(o1[1], o2[1]);
-            }
-        });
-        queue.offer(new int[]{X, 0});
-
-        while (!queue.isEmpty()) {
-            int[] cur = queue.poll();
-            if (mins[cur[0]] < cur[1]) {
-                continue;
-            }
-            for (int[] next : graph[cur[0]]) {
-                if (mins[next[0]] > mins[cur[0]] + next[1]) {
-                    mins[next[0]] = mins[cur[0]] + next[1];
-                    queue.offer(new int[]{next[0], mins[next[0]]});
-                }
-            }
-        }
+        dijkstra(X);
 
         StringBuilder answer = new StringBuilder();
-        for (int i = 1; i <= N; i++) {
-            if (mins[i] == K) {
+        for (int i = 1; i < N+1; i++) {
+            if(dist[i] == K) {
                 answer.append(i).append("\n");
             }
         }
 
+        if(answer.length() == 0) {
+            bw.write(Integer.toString(-1));
+        } else {
+            bw.write(answer.toString());
+        }
 
-        bw.write((answer.length() > 0) ? answer.toString() : "-1");
 
         br.close();
         bw.close();
+    }
+
+
+    public static void dijkstra(int start) {
+        dist = new int[N + 1];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+
+        PriorityQueue<Node> pq = new PriorityQueue<>();
+        pq.offer(new Node(start, 0));
+        dist[start] = 0;
+
+        while (!pq.isEmpty()) {
+            Node cur = pq.poll();
+            if (dist[cur.num] < cur.dist) {
+                continue;
+            }
+            for (int next : graph[cur.num]) {
+                if (dist[next] > dist[cur.num] + 1) {
+                    dist[next] = dist[cur.num] + 1;
+                    pq.offer(new Node(next, dist[next]));
+                }
+            }
+        }
+    }
+
+    public static class Node implements Comparable<Node> {
+        int num;
+        int dist;
+
+        public Node(int num, int dist) {
+            this.num = num;
+            this.dist = dist;
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            return Integer.compare(this.dist, o.dist);
+        }
     }
 }
