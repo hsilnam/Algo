@@ -1,65 +1,77 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 /*
-A에서 B로 가는 최단거리: bfs
+입력
+- N: 수빈 위치 (0<=N<=100_000)
+- K: 동생 위치 (0<=K<=100_000)
+
+조건
+- 걷거나 순간이동 가능
+    - 걷기: X-1, X+1
+    - 순간이동: 2*X
+
+풀이
+- bfs 사용
+
+출력
+- 수빈이가 동생을 찾을 수 있는 가장 빠른 시간
+
  */
+
 public class Main {
-    public static final int maxSize = 100_000;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        String[] temp = br.readLine().split(" ");
 
+        String[] temp = br.readLine().split(" ");
         int N = Integer.parseInt(temp[0]);
         int K = Integer.parseInt(temp[1]);
 
-        int[] mins = new int[maxSize + 1];
-        Arrays.fill(mins, Integer.MAX_VALUE);
-        Queue<int[]> queue = new PriorityQueue<>(new Comparator<int[]>() {
-            @Override
-            public int compare(int[] o1, int[] o2) {
-                return Integer.compare(o1[1], o2[1]);
-            }
-        });
-        mins[N] = 0;
-        queue.offer(new int[]{N, 0}); // idx, cnt
+        Queue<int[]> queue = new ArrayDeque<>();
+        boolean[] visited = new boolean[100_001];
+        queue.offer(new int[]{N, 0});
+        visited[N] = true;
 
+        int answer = 0;
         while (!queue.isEmpty()) {
             int[] cur = queue.poll();
-            int cIdx = cur[0];
-            int cCnt = cur[1];
 
-            if (cIdx == K) {
+            if (cur[0] == K) {
+                answer = cur[1];
                 break;
             }
 
-            if (isIn(cIdx * 2)
-                    && mins[cIdx * 2] > cCnt + 1) {
-                mins[cIdx * 2] = cCnt + 1;
-                queue.offer(new int[]{cIdx * 2, mins[cIdx * 2]});
-            }
+            for (int i = 0; i < 3; i++) {
+                int next = cur[0];
+                switch (i) {
+                    case 0:
+                        next += 1;
+                        break;
+                    case 1:
+                        next -= 1;
+                        break;
+                    case 2:
+                        next *= 2;
+                        break;
+                }
 
-            if (isIn(cIdx + 1)
-                    && mins[cIdx + 1] > cCnt + 1) {
-                mins[cIdx + 1] = cCnt + 1;
-                queue.offer(new int[]{cIdx + 1, mins[cIdx + 1]});
-            }
-            if (isIn(cIdx - 1)
-                    && mins[cIdx - 1] > cCnt + 1) {
-                mins[cIdx - 1] = cCnt + 1;
-                queue.offer(new int[]{cIdx - 1, mins[cIdx - 1]});
+                if (next < 0 || next >= 100_001) {
+                    continue;
+                }
+                if (visited[next]) {
+                    continue;
+                }
+                queue.offer(new int[]{next, cur[1] + 1});
+                visited[next] = true;
             }
         }
 
-        bw.write(Integer.toString(mins[K]));
+        bw.write(Integer.toString(answer));
 
         br.close();
+        bw.flush();
         bw.close();
-    }
-
-    public static boolean isIn(int idx) {
-        return (idx >= 0 && idx <= maxSize);
     }
 }
