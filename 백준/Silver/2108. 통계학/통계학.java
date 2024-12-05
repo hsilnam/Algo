@@ -84,8 +84,8 @@ public class Main {
         int answer2 = nums[(N - 1) / 2];
 
         // 최빈값 구하기
-        Node[] numCnts = new Node[8002]; // 총 8001개
-        for (int i = 0; i < 8002; i++) {
+        Node[] numCnts = new Node[8001]; // 총 8001개
+        for (int i = 0; i < 8001; i++) {
             numCnts[i] = new Node(i - 4000, 0);
         }
 
