@@ -2,108 +2,76 @@ import java.io.*;
 import java.util.*;
 
 /*
-입력
-- N: 줄의 개수(1<=N<=500_000, 홀수)
-- 정수들 (절댓값 4_000 이하)
 
-조건
-- 산술평균: (N개의 수들의 합)/N
-- 중앙값: 오름차순 나열 후 중앙값
-- 최빈값: N개의 수들 중 가장 많이 나타나는 값
-- 범위: 최댓값과 최솟값의 차이
-
-풀이
-- 중앙값, 범위를 구하기 위해 오른차순으로 정렬한다
-- 산술평균은 double로 계산한다
-- 최빈값은 노드(정수값, 개수) 1차원 배열을 통해 구한다
-    1. 처음에는 -4000 ~ 4000 값을 담기 위해 8001(0포함) 개의 배열을 만들고
-      중간값을 0으로 설정하여 적절한 자리에서 개수를 추가하도록한다
-      ex) -4000 -> idx:0, 0 -> idx: 4000
-        => idx = 정수값+4000
-    2. 개수 내림차수, 정수값 오른차순으로 정렬한다
-    3. 가장 앞에 위치한 정수값을 가져온다
-        단, 뒤의 값의 개수도 같다면 뒤에있는 정수값으로 가져온다
-
-출력
-- 순차적으로 출력
-    산술평균(소수점 이하 첫째자리 반올림),
-    중앙값,
-    최빈값(여러개 있을 땐 두번째로 작은 값으로),
-    범위
  */
 
 public class Main {
-
-
-    public static class Node implements Comparable<Node> {
-        int num;
-        int cnt;
-
-        public Node(int num, int cnt) {
-            this.num = num;
-            this.cnt = cnt;
-        }
-
-        @Override
-        public int compareTo(Node o) {
-            if (this.cnt == o.cnt) {
-                return Integer.compare(this.num, o.num); // 정수값 오름차순
-            }
-            return Integer.compare(o.cnt, this.cnt); // 개수 내림차순
-        }
-
-        @Override
-        public String toString() {
-            return num + " " + cnt;
-        }
-    }
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-
         int N = Integer.parseInt(br.readLine());
-        int[] nums = new int[N];
+        int[] nums = new int[8001];
         for (int i = 0; i < N; i++) {
-            nums[i] = Integer.parseInt(br.readLine());
+            nums[Integer.parseInt(br.readLine()) + 4000]++;
         }
 
-        Arrays.sort(nums);
+        int mean = 0;
+        int median = 0;
+        int mode = 0;
+        int range = 0;
 
-        // 산술평균 구하기
         int sum = 0;
-        for (int i = 0; i < N; i++) {
-            sum += nums[i];
-        }
-        double mean = (double) sum / (double) N;
-        mean = Math.round(mean);
-        int answer1 = (int) mean;
-
-        // 중앙값 구하기
-        int answer2 = nums[(N - 1) / 2];
-
-        // 최빈값 구하기
-        Node[] numCnts = new Node[8001]; // 총 8001개
         for (int i = 0; i < 8001; i++) {
-            numCnts[i] = new Node(i - 4000, 0);
+            sum += nums[i] * (i - 4000);
+        }
+        mean = (int) Math.round((double) sum / (double) N);
+
+        int cnt = 0;
+        for (int i = 0; i < 8001; i++) {
+            cnt += nums[i];
+            if (cnt >= 1 + N / 2) {
+                median = i - 4000;
+                break;
+            }
         }
 
-        for (int num : nums) {
-            numCnts[num + 4000].cnt += 1;
+        int intfrequency = 0;
+        boolean dupCheck = false;
+        for (int i = 0; i < 8001; i++) {
+            if (intfrequency < nums[i]) {
+                intfrequency = nums[i];
+                dupCheck = true;
+                mode = i - 4000;
+            } else if (intfrequency == nums[i] && dupCheck) {
+                mode = i - 4000;
+                dupCheck = false;
+            }
         }
-        Arrays.sort(numCnts);
 
-        int answer3 = (numCnts[0].cnt != numCnts[1].cnt) ? numCnts[0].num : numCnts[1].num;
+        int minRange = 0;
+        int maxRange = 0;
+        for (int i = 0; i < 8001; i++) {
+            if (nums[i] > 0) {
+                minRange = i - 4000;
+                break;
+            }
+        }
+        for (int i = 8000; i >= 0; i--) {
+            if (nums[i] > 0) {
+                maxRange = i - 4000;
+                break;
+            }
+        }
 
-        // 범위 구하기
-        int answer4 = nums[N - 1] - nums[0];
+        range = maxRange - minRange;
 
         StringBuilder answer = new StringBuilder();
-        answer.append(answer1).append("\n");
-        answer.append(answer2).append("\n");
-        answer.append(answer3).append("\n");
-        answer.append(answer4).append("\n");
+        answer.append(mean).append("\n");
+        answer.append(median).append("\n");
+        answer.append(mode).append("\n");
+        answer.append(range).append("\n");
 
         bw.write(answer.toString());
 
