@@ -47,7 +47,7 @@ public class Main {
         for (int i = 1; i < N + 1; i++) { // 비교할 학생 번호 기준
             for (int j = 0; j < 5; j++) { // 학년
                 for (int i2 = 1; i2 < N + 1; i2++) { // 비교할 학생 번호
-                    if (students[i][j] == students[i2][j]) {
+                    if (students[i][j] == students[i2][j] && i != j) {
                         sameClass[i].add(i2);
                         sameClass[i2].add(i);
                     }
