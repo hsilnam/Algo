@@ -17,9 +17,9 @@ import java.util.*;
 
 
 풀이
-- P(1)~P(6)까지는 일정한 패턴이 없기 때문에 초기값으로 한다
-   1, 1, 1, 2, 2, 3
-- P(7)부터는
+- P(1)~P(5)까지는 일정한 패턴이 없기 때문에 초기값으로 한다
+   1, 1, 1, 2, 2
+- P(6)부터는
     P(N) = P(N-5) + P(N-1) 로 길이가 정해진다
 - 미리 P(100)을 만들어 놓은 후에 테스트케이스에 맞는 답을 바로 가져온다
 - 이때 dp의 누적 합이 int 범위를 넘어서으로 long으로 한다
@@ -37,11 +37,10 @@ public class Main {
         long[] dp = new long[101]; // 맨 앞은 패딩
         dp[1] = dp[2] = dp[3] = 1;
         dp[4] = dp[5] = 2;
-        dp[6] = 3;
-        for (int i = 7; i < 101; i++) {
+        for (int i = 5; i < 101; i++) {
             dp[i] = dp[i - 5] + dp[i - 1];
         }
-        
+
         int T = Integer.parseInt(br.readLine());
 
         StringBuilder answer = new StringBuilder();
