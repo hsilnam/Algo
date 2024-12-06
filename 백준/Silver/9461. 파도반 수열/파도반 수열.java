@@ -1,59 +1,60 @@
-import java.util.*;
 import java.io.*;
+import java.lang.reflect.Array;
+import java.util.*;
 
 /*
-dp(0) = 0
-dp(1) = 1
-dp(2) = dp(1) = 1
-dp(3) = dp(2) = 1
-dp(4) = dp(1)+dp(3) = 2
-dp(5) = dp(0)+dp(4) = 2
-dp(6) = dp(1)+dp(5) = 3
-dp(7) = dp(2)+dp(6) = 4
-dp(8) = dp(3)+dp(7) = 5
-dp(9) = dp(4)+dp(8) = 7
-dp(10) = dp(5)+dp(9) = 9
-...
-----
-dp(n) = dp(n-5) + dp(n-1)
+입력
+- T: tc
+- N: (1<=N<=100)
 
-- 주의: 자료형
+조건
+- 정삼각형이 나선 모양으로 놓여져 있음
+- 첫 삼각형의 변의 길이: 1
+- 가장 긴변의 길이 K일 때, 그 변에 길이가 K인 정삼각형 추가
+- P(N): 나선에 있는 정삼각형의 변의 길이
+    - 예시) P(1) ~ P(10)
+        = 1, 1, 1, 2, 2, 3, 4, 5, 7, 9
+
+
+풀이
+- P(1)~P(6)까지는 일정한 패턴이 없기 때문에 초기값으로 한다
+   1, 1, 1, 2, 2, 3
+- P(7)부터는
+    P(N) = P(N-5) + P(N-1) 로 길이가 정해진다
+- 미리 P(100)을 만들어 놓은 후에 테스트케이스에 맞는 답을 바로 가져온다
+- 이때 dp의 누적 합이 int 범위를 넘어서으로 long으로 한다
+
+출력
+- 각 테스트 케이스마다 P(N) 출력
  */
-public class Main {
-    static class Node {
-        int num;
-        int len;
 
-        public Node(int num, int len) {
-            this.num = num;
-            this.len = len;
-        }
-    }
+public class Main {
 
     public static void main(String[] args) throws Exception {
-        final int maxN = 100;
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-        int T = Integer.parseInt(br.readLine());
-
-        long dp[] = new long[maxN + 1];
+        long[] dp = new long[101]; // 맨 앞은 패딩
         dp[1] = dp[2] = dp[3] = 1;
-        dp[4] = 2;
-        for (int i = 5; i < maxN + 1; i++) {
+        dp[4] = dp[5] = 2;
+        dp[6] = 3;
+        for (int i = 7; i < 101; i++) {
             dp[i] = dp[i - 5] + dp[i - 1];
         }
+        
+        int T = Integer.parseInt(br.readLine());
 
-        StringBuilder result = new StringBuilder();
+        StringBuilder answer = new StringBuilder();
         for (int t = 0; t < T; t++) {
             int N = Integer.parseInt(br.readLine());
-            result.append(dp[N]).append("\n");
+            answer.append(dp[N]).append("\n");
         }
 
-        System.out.println(result.toString());
+        bw.write(answer.toString());
 
         br.close();
+        bw.flush();
         bw.close();
     }
+
 }
