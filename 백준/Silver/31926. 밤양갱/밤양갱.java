@@ -47,7 +47,7 @@ import java.util.*;
     - daldidalgo를 2^i당 초가 하나씩 오름
                    (여기서 숫자는 묶음)
         => floor(기본(10) + i)를 구하면 답이 나온다
-           but, 큰수에 대한 부동소수점, 정밀도 문제 때문에 답이 나오지 않음
+           but, 큰수에 대한 부동소수점, 정밀도 문제 때문에 답이 틀릴 수 있음
        -> N/2를 해가면서 시간을 count한다
 
 출력
@@ -62,8 +62,18 @@ public class Main {
 
         Long N = Long.parseLong(br.readLine());
 
-        int time = 10+ (int) Math.floor(Math.log(N) / Math.log(2));
+        int time = 10; // basic
+        // sol1)
+        while (N > 1) {
+            N /= 2;
+            time++;
+        }
+
+        /*
+        // sol2)
+        int time += (int) Math.floor(Math.log(N) / Math.log(2));
         bw.write(Integer.toString(time));
+         */
 
         br.close();
         bw.flush();
