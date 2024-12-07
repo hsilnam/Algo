@@ -62,12 +62,7 @@ public class Main {
 
         Long N = Long.parseLong(br.readLine());
 
-        int time = 10; // basic
-        while (N > 1) {
-            N /= 2;
-            time++;
-        }
-
+        int time = 10+ (int) Math.floor(Math.log(N) / Math.log(2));
         bw.write(Integer.toString(time));
 
         br.close();
