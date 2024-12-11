@@ -1,48 +1,66 @@
-import java.util.Scanner;
+import java.io.*;
+import java.util.*;
 
 /*
- * url: https://www.acmicpc.net/problem/15649
+입력
+- N,M: 자연수 (1<=M<=N<=8)
+
+조건
+- 1부터 N까지 자연수 중에서 중복 없이 M개를 고른 수열
+=> 중복 x -> 순열
+
+풀이
+- 이미 선택된 것은 제외하고 선택하고, 선택해제하면서 구하기
+
+출력
+- 수열은 사전순으로 증가하는 순서
+- 중복되는 수열 없음
  */
 
 public class Main {
-	
-	static int N, M; // N: 자연수(1~N), M(수열길이)
-	static int[] numbers; // 수열 배열
-	static boolean[] isSelected; // 자연수 사용 여부
-	static StringBuilder result; // 결과 문자열
-	
-	public static void main(String[] args) { // main start
-		Scanner sc = new Scanner(System.in); // input값 가져오기 시작
-		N = sc.nextInt(); // N 설정값 가져오기
-		M = sc.nextInt(); // M 설정값 가져오기
-		
-		numbers = new int[M]; // M의 수열길이를 가지는 numbers 배열 생성
-		isSelected = new boolean[N+1]; // 자연수(1~N)에 대한 배열 생성 
-		result = new StringBuilder(); //결과 문자열 생성
-		
-		permutation(0); // 재귀를 통해 순열 경우의 수 구하는 함수 호출
-		
-		System.out.println(result.toString()); // 결과 출력
-	} // main end
-	
-	public static void permutation(int cnt) { // permutation start. 재귀를 통해 수열 생성하는 함수. cnt: 현재 자리수(0~M)
-		if(cnt == M) { // 기저조건 start
-			for(int i=0 ; i<M ; i++) { // StringBuffer에 완성한 수열(numbers)의 원소 정보를 넣는 반복문
-				if(i > 0) { // 첫번째 원소를 제외하고 공백을 넣는 조건문
-					result.append(" "); // 공백 추가
-				} // 조건문 종료
-				result.append(numbers[i]); // 원소 정보 추가
-			} // 반복문
-			result.append("\n"); // 마지막에 새로운 라인 추가
-			return; // 재귀 종료
-		} // 기저조건 end
-		
-		for(int i=1 ; i<=N ; i++) { // 자연수(1~N)을 이용하여 수열을 만드는 반복문
-			if(isSelected[i] == true) continue; // 이미 앞에 해당 자연수(i)를 사용했다면 넘어감
-			numbers[cnt] = i; // 해당 자리(cnt)에 해당 자연수(i)를 넣음
-			isSelected[i] = true; // 해당 자연수(i)를 사용했다고 표시
-			permutation(cnt+1); // 재귀를 통해 다음 자리수에 대하여 동일한 작업 
-			isSelected[i] = false; // 수열 생성 완료 후 다른 수열을 만들기 위한 초기화 작업
-		} // 반복문 종료
-	} // permutation end
+    public static int N, M;
+    public static int[] nums;
+    public static boolean[] selected;
+    public static StringBuilder answer = new StringBuilder();
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+
+        String[] temp = br.readLine().split(" ");
+        N = Integer.parseInt(temp[0]);
+        M = Integer.parseInt(temp[1]);
+
+        nums = new int[M];
+        selected = new boolean[N + 1]; // 숫자 맞춰주기
+
+        perm(0);
+
+        bw.write(String.valueOf(answer));
+
+        br.close();
+        bw.flush();
+        bw.close();
+    }
+
+    public static void perm(int idx) {
+        if (M == idx) {
+            for (int n : nums) {
+                answer.append(n).append(" ");
+            }
+            answer.append("\n");
+            return;
+        }
+
+        for (int i = 1; i < N + 1; i++) {
+            if (selected[i]) {
+                continue;
+            }
+
+            selected[i] = true; // 선택
+            nums[idx] = i; // 값저장
+            perm(idx + 1); // 다음
+            selected[i] = false; // 선택 해재 (백트레킹)
+        }
+    }
 }
