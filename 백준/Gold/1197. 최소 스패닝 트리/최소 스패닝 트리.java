@@ -35,32 +35,31 @@ public class Main {
         int E = Integer.parseInt(st.nextToken());
 
         parents = new int[V + 1]; // padding 0
-        ArrayList<int[]> nodes = new ArrayList<>();
-
-        for (int i = 0; i < E; i++) {
-            st = new StringTokenizer(br.readLine());
-            int from = Integer.parseInt(st.nextToken());
-            int to = Integer.parseInt(st.nextToken());
-            int weight = Integer.parseInt(st.nextToken());
-            nodes.add(new int[]{from, to, weight});
-        }
-
-        Collections.sort(nodes, new Comparator<int[]>() {
+        PriorityQueue<int[]> nodes = new PriorityQueue<>(new Comparator<int[]>() {
             @Override
             public int compare(int[] o1, int[] o2) {
                 return Integer.compare(o1[2], o2[2]);
             }
         });
 
+        for (int i = 0; i < E; i++) {
+            st = new StringTokenizer(br.readLine());
+            int from = Integer.parseInt(st.nextToken());
+            int to = Integer.parseInt(st.nextToken());
+            int weight = Integer.parseInt(st.nextToken());
+            nodes.offer(new int[]{from, to, weight});
+        }
+
         makeSet(V);
 
         long sum = 0;
-        for (int[] node : nodes) {
+        while (!nodes.isEmpty()) {
+            int[] node = nodes.poll();
             if (union(node[0], node[1])) {
                 sum += node[2];
             }
         }
-
+        
         bw.write(Long.toString(sum));
 
 
