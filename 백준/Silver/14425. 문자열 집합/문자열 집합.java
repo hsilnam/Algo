@@ -18,6 +18,8 @@ import java.util.*;
 
 풀이
 - trie 알고리즘을 이용하여 N을 저장해놓고, M을 검사해서 해당 문자열이 존재하는지 검사
+    - 오래 걸림 (완전 일치 검사이기 떄문에)
+- set으로 N저장해놓고 M존재 검사
 
 출력
 - 총 몇 개가 집합 S에 포함되어있는지 출력
@@ -25,46 +27,6 @@ import java.util.*;
  */
 
 public class Main {
-    public static class Trie {
-        private final TrieNode root;
-
-        public Trie() {
-            root = new TrieNode();
-        }
-
-        public void insert(String s) {
-            TrieNode node = root;
-            for (char c : s.toCharArray()) {
-                int idx = c - 'a';
-                if (node.children[idx] == null) {
-                    node.children[idx] = new TrieNode();
-                }
-                node = node.children[idx];
-            }
-            node.isEnd = true;
-        }
-
-        public boolean search(String s) {
-            TrieNode node = root;
-            for (char c : s.toCharArray()) {
-                int idx = c - 'a';
-                if (node.children[idx] == null) {
-                    return false;
-                }
-                node = node.children[idx];
-            }
-            return node.isEnd;
-        }
-    }
-
-    public static class TrieNode {
-        TrieNode[] children = new TrieNode[26];
-        boolean isEnd;
-
-        public TrieNode() {
-        }
-    }
-
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
@@ -73,15 +35,15 @@ public class Main {
         int N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
 
-        Trie trie = new Trie();
+        Set<String> set = new HashSet<>();
         for (int i = 0; i < N; i++) {
-            trie.insert(br.readLine());
+            set.add(br.readLine());
         }
 
 
         int cnt = 0;
         for (int i = 0; i < M; i++) {
-            if (trie.search(br.readLine())) {
+            if (set.contains(br.readLine())) {
                 cnt++;
             }
         }
