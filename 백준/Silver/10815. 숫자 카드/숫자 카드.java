@@ -43,7 +43,7 @@ public class Main {
         st = new StringTokenizer(br.readLine());
         StringBuilder answer = new StringBuilder();
         for (int i = 0; i < M; i++) {
-            answer.append((isContains(Integer.parseInt(st.nextToken()))) ? 1 : 0).append(" ");
+            answer.append(isContains(Integer.parseInt(st.nextToken()))).append(" ");
         }
 
 
@@ -54,20 +54,20 @@ public class Main {
         bw.close();
     }
 
-    public static boolean isContains(int num) {
+    public static int isContains(int num) {
         int left = 0, right = cards.length - 1;
         while (left <= right) {
             int mid = (left + right) / 2;
 
             if (cards[mid] == num) {
-                return true;
+                return 1;
             } else if (cards[mid] < num) {
                 left = mid + 1;
             } else {
                 right = mid - 1;
             }
         }
-        return false;
+        return 0;
     }
 
 }
