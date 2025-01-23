@@ -1,81 +1,72 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
 /*
-1. 2차원 누적합 구하기
-2. 분할정복을 통해(재귀로 구현) 텀색
-    - 현재 검사하는 한 변의 길이가 n일 경우,
-    - 해당 부분 합이
-        - n*n(너비)인 경우 검은색 카운트 1 올리고 현재 단계 탐색 멈추기 (종료조건)
-        - 0인 경우 하얀색 카운트 1 올리고 현재 단계 탐색 멈추기 (종료조건)
-    - n이 0이면 탐색 멈추기 (종료조건)
+입력
+- N: 종이의 한 변의 길이 (2, 4, 8, 16, 32, 64, 128)
+- 색 정보
+    - 하얀색: 0
+    - 파란색: 1
+
+조건
+- 똑같은 크기의 네 개의 N/2 × N/2색종이로 나눔
+- 자르기 반복종료 조건:
+    - 잘라진 종이가 모두 하얀색 또는 모두 파란색으로 칠해져 있음
+    - 하나의 정사각형 칸이 되어 더 이상 자를 수 없음
+
+풀이
+- 누적합 구하기
+- 재귀로 반으로 나누면서 체크하기
+    - 사각형의 누적합이 사각형의 너비면 하얀색 카운트+1,  0이면 파란색 카운트+1 하고 더이상 자르지 않는다
+
+출력
+- 잘라진 햐얀색 색종이의 개수, 파란색 색종이의 개수
  */
+
 public class Main {
-    static int whiteCnt, blueCnt; // 색깔 표시: white 0, blue 1
-    static int[][] sumMap;
+    public static int wCnt, bCnt;
+    public static int[][] mapsum;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
         int N = Integer.parseInt(br.readLine());
-        sumMap = new int[N][N];
-        // get input
+
+        int[][] map = new int[N][N];
+        mapsum = new int[N + 1][N + 1];
+
         for (int i = 0; i < N; i++) {
-            String[] temp = br.readLine().split(" ");
+            StringTokenizer st = new StringTokenizer(br.readLine());
             for (int j = 0; j < N; j++) {
-                sumMap[i][j] = Integer.parseInt(temp[j]);
+                map[i][j] = Integer.parseInt(st.nextToken());
+                mapsum[i + 1][j + 1] = map[i][j] + mapsum[i][j + 1] + mapsum[i + 1][j] - mapsum[i][j];
             }
         }
 
-        // 누적합 구하기
-        for (int i = 0; i < N; i++) {
-            for (int j = 1; j < N; j++) {
-                sumMap[i][j] += sumMap[i][j - 1];
-            }
-        }
-        for (int j = 0; j < N; j++) {
-            for (int i = 1; i < N; i++) {
-                sumMap[i][j] += sumMap[i - 1][j];
-            }
-        }
+        divide(0, 0, N);
 
-        explore(0, 0, N - 1, N - 1, N);
+        bw.write(wCnt + "\n" + bCnt + "\n");
 
-        bw.write(whiteCnt+"\n"+blueCnt);
         br.close();
+        bw.flush();
         bw.close();
     }
 
-    static public void explore(int sx, int sy, int ex, int ey, int n) {
-        int sum = sumMap[ex][ey];
-        if(sx != 0) {
-            sum -= sumMap[sx - 1][ey];
-        }
-        if(sy != 0) {
-            sum -= sumMap[ex][sy - 1];
-        }
-        if(sx != 0 && sy != 0) {
-            sum += sumMap[sx - 1][sy - 1];
-        }
-
-        if (sum == n * n) {
-            blueCnt++;
+    public static void divide(int r, int c, int size) {
+        int sum = mapsum[r + size][c + size] - mapsum[r][c + size] - mapsum[r + size][c] + mapsum[r][c];
+        if (sum == 0) {
+            wCnt++;
             return;
-        } else if (sum == 0) {
-            whiteCnt++;
+        } else if (sum == size * size) {
+            bCnt++;
             return;
         }
 
-        int mx = sx + n / 2;
-        int my = sy + n / 2;
-
-        if (n == 1) {
-            return;
-        }
-        explore(sx, sy, mx - 1, my - 1, n / 2);
-        explore(sx, my, mx - 1, ey, n / 2);
-        explore(mx, sy, ex, my - 1, n / 2);
-        explore(mx, my, ex, ey, n / 2);
+        int newSize = size / 2;
+        divide(r, c, newSize);
+        divide(r, c + newSize, newSize);
+        divide(r + newSize, c, newSize);
+        divide(r + newSize, c + newSize, newSize);
     }
 }
