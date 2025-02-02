@@ -1,65 +1,69 @@
-import java.util.*;
+import org.w3c.dom.Node;
+
 import java.io.*;
+import java.util.*;
 
 /*
-- bfs 이용한 최단거리 구하기 문제
-    - queue에 (좌표,거리)정보를 저장하였다
-    - 거리가 짧은 것에 우선순위를 둘 수 있도록 PriorityQueue를 사용하였다
-    - tg으로부터 끝까지 뻗어나갔을 때 다른 위치에 얼마나 걸리는지 거리값(dist)을 저장하였다
-    - 0인부분은 접근하지 못하니 넘어가게 하였다
-- 거리값을 저장하는 배열을 초기화할때,
-    입력값이 0(원래 못가는 부분)인 부분은을 제외하고 -1(원래 갈 수 있는데 못가는 부분)로 초기화 해주었다
-    -> 원래갈 수 있는데 못가는 부분을 표시해줘야하기 때문이다
-        (bfs는 갈 수 있는 부분만 검사하니까)
+입력
+- 지도의 크기(세로,가로): N,M (2<=N,M<=1000)
+- 지도 정보
+    - 0: 갈 수 없는 땅
+    - 1: 갈 수 있는 땅
+    - 2: 목표지점 (단, 한개)
+
+조건
+- 모든 지점에 대하여 목표지점까지의 거리
+- 오직 가로 세로만 움직일 수 있음
+
+풀이
+- 출발점부터 시작해서 bfs를 통해 거리 구하기
+    - 출발점은 거리 0으로 표시
+- 출력 시 1인데 방문하지 않은 곳 -1로 변경
+
+출력
+- 목표지점까지의 거리 출력
+    - 원래 갈 수 없는 땅: 0
+    - 원래 갈 수 있는 부분 중 도달할 수 없는 위치: -1
  */
+
 public class Main {
     static int[][] moves = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+    static int N, M;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-        String[] temp = br.readLine().split(" ");
-        int N = Integer.parseInt(temp[0]);
-        int M = Integer.parseInt(temp[1]);
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken()); // 세로
+        M = Integer.parseInt(st.nextToken()); // 가로
 
-        int[] tgPos = new int[2];
         int[][] map = new int[N][M];
+        int[] tgIdx = new int[2];
         for (int i = 0; i < N; i++) {
-            temp = br.readLine().split(" ");
+            st = new StringTokenizer(br.readLine());
             for (int j = 0; j < M; j++) {
-                map[i][j] = Integer.parseInt(temp[j]);
+                map[i][j] = Integer.parseInt(st.nextToken());
                 if (map[i][j] == 2) {
-                    tgPos[0] = i;
-                    tgPos[1] = j;
+                    tgIdx = new int[]{i, j};
                 }
             }
         }
 
-        int[][] dists = new int[N][M];
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                dists[i][j] = (map[i][j] == 0) ? 0 : -1;
-            }
-        }
+        Queue<int[]> queue = new ArrayDeque<>(); // x, y
         boolean[][] visited = new boolean[N][M];
-        Queue<int[]> queue = new PriorityQueue<>(new Comparator<int[]>() {
-            @Override
-            public int compare(int[] o1, int[] o2) {
-                return Integer.compare(o1[2], o2[2]);
-            }
-        }); // x, y, dist
-        queue.offer(new int[]{tgPos[0], tgPos[1], 0});
-        visited[tgPos[0]][tgPos[1]] = true;
 
+        queue.offer(new int[]{tgIdx[0], tgIdx[1]});
+        visited[tgIdx[0]][tgIdx[1]] = true;
+        map[tgIdx[0]][tgIdx[1]] = 0;
         while (!queue.isEmpty()) {
             int[] cur = queue.poll();
-            dists[cur[0]][cur[1]] = cur[2];
 
-            int nDist = cur[2] + 1;
             for (int[] move : moves) {
-                int nx = move[0] + cur[0];
-                int ny = move[1] + cur[1];
+                int nx = cur[0] + move[0];
+                int ny = cur[1] + move[1];
+                int ncnt = map[cur[0]][cur[1]] + 1;
+
                 if (nx < 0 || nx >= N || ny < 0 || ny >= M) {
                     continue;
                 }
@@ -69,22 +73,27 @@ public class Main {
                 if (map[nx][ny] == 0) {
                     continue;
                 }
-                queue.offer(new int[]{nx, ny, nDist});
+                map[nx][ny] = ncnt;
+                queue.offer(new int[]{nx, ny});
                 visited[nx][ny] = true;
             }
         }
 
-        StringBuilder result = new StringBuilder();
+        StringBuilder answer = new StringBuilder();
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < M; j++) {
-                result.append(dists[i][j]).append(" ");
+                if (map[i][j] == 1 && !visited[i][j]) {
+                    map[i][j] = -1;
+                }
+                answer.append(map[i][j]).append(" ");
             }
-            result.append("\n");
+            answer.append("\n");
         }
 
-        bw.write(result.toString());
+        bw.write(answer.toString());
 
         br.close();
+        bw.flush();
         bw.close();
     }
 }
