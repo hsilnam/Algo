@@ -2,84 +2,133 @@ import java.io.*;
 import java.util.*;
 
 /*
-- MST (크루스칼)
+입력
+- N: 건물의 개수 (3<=N<=10^5)
+- M: 도로의 개수 (2<=M<=5*10^5)
+- a,b,c:건물의 번호(1~N), 비용(10^6)
+
+풀이
+- 절약: 전체 도로 비용의 합 - MST를 통해 구한 최소 비용
+- 프림 알고리즘 이용
+    - 정점의 개수보다 간선의 개수가 많기 때문에 선택
+    - (N-1)*c (10^5 * 10^6)이므로 합을 구할 때 long 사용
+
+
+
+출력
+- 예산을 얼마나 절약할 수 있는지
+- 모든 건물이 연결되어 있지 않으면 -1
+
+
+[참고]
+MST
+- 가중치 그래프 (모든 정점 포함)
+    - N개의 정점: 간선 개수 반드시 N-1
+- 최소한의 가중치의 합으로 연결
+- 사이클 없어야함
+- 여러 개의 최소 신장 트리 존재 가능
+
+크루스칼 알고리즘
+- 간선 중심
+- 가중치가 작은 간선 부터 선택 (정렬할 때 우선순위 큐 이용)
+- 유니온-파인드 이용
+- O(ElogE)
+- 간선 개수가 적을 때 유리
+
+프림 알고리즘
+- 프림 알고리즘
+- 임의의 정점에서 시작, 인접한 최소 가중치 간선 선택
+- 우선순위 큐 이용
+- O(ElogV)
+- 정점 개수가 적을 때 유리
+- 실전에서는 더 많이 사용
  */
+
 public class Main {
-    static int[] parents; // i번째 멤버의 부모 정보들
+    public static int[] parents;
+    public static int N;
 
     public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-        String[] temp = br.readLine().split(" ");
-        int N = Integer.parseInt(temp[0]);
-        int M = Integer.parseInt(temp[1]);
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
 
-        parents = new int[N + 1];
-        ArrayList<int[]> nodes = new ArrayList<>();
 
         long total = 0;
-        for (int i = 0; i < M; i++) {
-            temp = br.readLine().split(" ");
-            int from = Integer.parseInt(temp[0]);
-            int to = Integer.parseInt(temp[1]);
-            int weight = Integer.parseInt(temp[2]);
-            total += weight;
-            nodes.add(new int[]{from, to, weight});
-        }
-
-        Collections.sort(nodes, new Comparator<int[]>() {
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() { // a, b, c
             @Override
             public int compare(int[] o1, int[] o2) {
-                return Integer.compare(o1[2], o2[2]);
+                return Integer.compare(o1[2], o2[2]); // c
             }
         });
 
-        makeSet(N);
+        for (int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            int c = Integer.parseInt(st.nextToken());
 
-        long sum = 0;
+            pq.offer(new int[]{a, b, c});
+
+            total += c;
+        }
+
+        make();
+
+        long answer = -1;
+        long sumc = 0;
         int cnt = 0;
-        boolean isOk = false;
-        for (int[] node : nodes) {
-            if (union(node[0], node[1])) {
-                sum += node[2];
-                cnt++;
+        while (!pq.isEmpty()) {
+            if (cnt == N - 1) {
+                answer = total - sumc;
+                break;
+            }
+            int[] node = pq.poll();
+            int a = node[0];
+            int b = node[1];
+            long c = node[2];
 
-                if (cnt == N - 1) {
-                    isOk = true;
-                    break;
-                }
+            if (find(a) != find(b)) {
+                union(a, b);
+                sumc += c;
+                cnt++;
             }
         }
 
-        bw.write(Long.toString((isOk) ? (total - sum) : -1));
-
+        bw.write(String.valueOf(answer));
         br.close();
+        bw.flush();
         bw.close();
     }
 
-    public static void makeSet(int n) {
-        for (int i = 1; i <= n; i++) {
+    public static void make() {
+        parents = new int[N + 1]; // 1~
+        for (int i = 1; i < N + 1; i++) {
             parents[i] = i;
         }
     }
 
-    public static int findSet(int a) {
-        if (a == parents[a]) {
-            return a;
+    public static void union(int a, int b) {
+        int ap = find(a);
+        int bp = find(b);
+        if (ap > bp) {
+            int temp = ap;
+            ap = bp;
+            bp = temp;
         }
 
-        return parents[a] = findSet(parents[a]);
+        if (ap != bp) {
+            parents[bp] = ap;
+        }
     }
 
-    public static boolean union(int a, int b) {
-        a = findSet(a);
-        b = findSet(b);
-        if (a == b) {
-            return false;
-        } else {
-            parents[b] = a;
+    public static int find(int a) {
+        if (parents[a] == a) {
+            return a;
         }
-        return true;
+        return parents[a] = find(parents[a]);
     }
 }
