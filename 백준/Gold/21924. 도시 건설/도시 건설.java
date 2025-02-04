@@ -47,7 +47,7 @@ MST
 - 정점 개수가 적을 때 유리
 - 실전에서는 더 많이 사용
  */
-public class Solution3 {
+public class Main {
     public static void main(String[] args) throws Exception { // prim
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
