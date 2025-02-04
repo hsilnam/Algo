@@ -9,15 +9,19 @@ import java.util.*;
 
 풀이
 - 절약: 전체 도로 비용의 합 - MST를 통해 구한 최소 비용
-- 프림 알고리즘 이용
-    - 정점의 개수보다 간선의 개수가 많기 때문에 선택
-    - (N-1)*c (10^5 * 10^6)이므로 합을 구할 때 long 사용
-
-
+- (N-1)*c (10^5 * 10^6)이므로 합을 구할 때 long 사용
+- 2가지 알고리즘 구현: 프림보다 크루스칼이 조금 더 빠름
+    - 프림 알고리즘 이용
+        - 중간 정도의 밀집도라 덜 빠른 듯하다
+          (극단적인 밀집그래프가 아님)
+        - 정점을 하나씩 넓혀가는 거라 우선순위 큐의 연산이 많아짐
+    - 크루스칼 알고리즘
+        - 정렬 후 유니온 파인드(o(1)), 간선 빠르게 처리
 
 출력
 - 예산을 얼마나 절약할 수 있는지
 - 모든 건물이 연결되어 있지 않으면 -1
+
 
 
 [참고]
@@ -43,8 +47,80 @@ MST
 - 정점 개수가 적을 때 유리
 - 실전에서는 더 많이 사용
  */
+public class Solution3 {
+    public static void main(String[] args) throws Exception { // prim
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
 
-public class Main {
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+
+        ArrayList<int[]>[] graph = new ArrayList[N + 1]; // 1~
+        for (int i = 0; i < N + 1; i++) {
+            graph[i] = new ArrayList<>();
+        }
+
+        long total = 0;
+        for (int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int a = Integer.parseInt(st.nextToken());
+            int b = Integer.parseInt(st.nextToken());
+            int c = Integer.parseInt(st.nextToken());
+
+            graph[a].add(new int[]{b, c});
+            graph[b].add(new int[]{a, c});
+
+            total += c;
+        }
+
+        PriorityQueue<int[]> pq = new PriorityQueue<>(new Comparator<int[]>() { // b, c
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return Integer.compare(o1[1], o2[1]); // c
+            }
+        });
+
+        long answer = -1;
+        long sum = 0;
+        int cnt = 0; // 정점
+        boolean[] visited = new boolean[N + 1];
+        pq.offer(new int[]{1, 0});
+        while (!pq.isEmpty()) {
+            if(cnt == N){
+                answer = total - sum;
+                break;
+            }
+            int[] cur = pq.poll();
+            int b = cur[0];
+            int c = cur[1];
+            if (visited[b]) {
+                continue;
+            }
+            cnt++;
+            visited[b] = true;
+            sum += c;
+            for (int[] next : graph[b]) {
+                int nb = next[0];
+                if (visited[nb]) {
+                    continue;
+                }
+                pq.offer(next);
+            }
+        }
+
+        bw.write(String.valueOf(answer));
+
+        br.close();
+        bw.flush();
+        bw.close();
+    }
+}
+
+
+
+/* // 크루스칼 풀이: 1020ms
+public class Solution3 {
     public static int[] parents;
     public static int N;
 
@@ -80,7 +156,7 @@ public class Main {
 
         long answer = -1;
         long sumc = 0;
-        int cnt = 0;
+        int cnt = 0; // 간선
         while (!pq.isEmpty()) {
             if (cnt == N - 1) {
                 answer = total - sumc;
@@ -132,3 +208,4 @@ public class Main {
         return parents[a] = find(parents[a]);
     }
 }
+ */
