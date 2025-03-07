@@ -1,23 +1,23 @@
 import java.io.*;
-import java.math.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringBuilder sb = new StringBuilder();
         
-        BigInteger n = new BigInteger(br.readLine());
-        BigInteger left = BigInteger.ZERO;
-        BigInteger right = n;
-        BigInteger answer = BigInteger.ZERO;
+        long n = Long.parseLong(br.readLine());
+        long left = 0;
+        long right = n;
+        long answer = 0;
         
-        while (left.compareTo(right) <= 0) {
-            BigInteger mid = left.add(right).divide(BigInteger.TWO);
-            if (mid.multiply(mid).compareTo(n) >= 0) {
+        while (left <= right) {
+            long mid = (left + right) / 2;
+            if (Math.pow(mid, 2) >= n) {
                 answer = mid;
-                right = mid.subtract(BigInteger.ONE);
+                right = mid - 1;
             } else {
-                left = mid.add(BigInteger.ONE);
+                left = mid + 1;
             }
         }
         
